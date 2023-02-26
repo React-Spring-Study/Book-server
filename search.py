@@ -1,7 +1,6 @@
 from elasticsearch import Elasticsearch
 import json
 
-
 def issue(s, page=1, product=None, op=None, sort=None, ctgr=None):
     if product == 'All':
         product = None
