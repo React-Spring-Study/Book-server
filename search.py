@@ -38,3 +38,16 @@ def issue(s, page=1, product=None, op=None, sort=None, ctgr=None):
     total = response['hits']['total']['value']
 
     return hits, total
+
+def search(index_name):
+    es = Elasticsearch("localhost:9200", timeout=30)
+    index=index_name
+    body = {
+        'query': {
+            'match': {
+                'title': '단어'
+            }
+        }
+    }
+    result = es.search(index=index, body=body)
+    return result
