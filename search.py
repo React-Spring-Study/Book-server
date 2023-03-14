@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch
-import json
 from book import Book
+import json
 
 index = "books"
 
@@ -45,7 +45,7 @@ def issue(s, page=1, product=None, op=None, sort=None, ctgr=None):
 def search_by_title(title):
     es = Elasticsearch("localhost:9200", timeout=30)
     body = {
-        'size': 30,
+        'size': 20,
         'query': {
             'match': {
                 'title': title
@@ -55,21 +55,6 @@ def search_by_title(title):
     result = es.search(index=index, body=body)['hits']
     total = result['total']['value']
     return total, to_book(result)
-
-
-def to_book(result):
-    response = []
-    for book in result['hits']:
-        response.append(
-            Book(book['_source']['isbn'],
-                 book['_source']['title'],
-                 book['_source']['author'],
-                 book['_source']['publisher'],
-                 book['_source']['pub_date'],
-                 book['_source']['information'],
-                 book['_source']['img_url']).serialize()
-        )
-    return response
 
 
 def search_by_isbn(isbn):
@@ -89,3 +74,19 @@ def search_by_isbn(isbn):
     }
     result = es.search(index=index, body=body)['hits']
     return to_book(result)
+
+def to_book(result):
+    response = []
+    for book in result['hits']:
+        response.append(
+            Book(book['_source']['isbn'],
+                 book['_source']['title'],
+                 book['_source']['author'],
+                 book['_source']['publisher'],
+                 book['_source']['pub_date'],
+                 book['_source']['information'],
+                 book['_source']['img_url']).serialize()
+        )
+    return response
+
+
