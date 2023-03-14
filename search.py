@@ -54,6 +54,10 @@ def search_by_title(title):
     }
     result = es.search(index=index, body=body)['hits']
     total = result['total']['value']
+    return total, to_book(result)
+
+
+def to_book(result):
     response = []
     for book in result['hits']:
         response.append(
@@ -65,17 +69,23 @@ def search_by_title(title):
                  book['_source']['information'],
                  book['_source']['img_url']).serialize()
         )
-    return total, response
+    return response
 
 
 def search_by_isbn(isbn):
     es = Elasticsearch("localhost:9200", timeout=30)
     body = {
-        'query': {
-            'match': {
-                'isbn': isbn
+        "query": {
+            "bool": {
+                "filter": [
+                    {
+                        "match": {
+                            "isbn.keyword": isbn
+                        }
+                    }
+                ]
             }
         }
     }
-    result = es.search(index=index, body=body)
-    return result
+    result = es.search(index=index, body=body)['hits']
+    return to_book(result)
