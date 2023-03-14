@@ -1,6 +1,3 @@
-from flask import jsonify
-
-
 class Book:
     isbn = ""
     title = ""
@@ -19,8 +16,8 @@ class Book:
         self.information = information
         self.img_url = img_url
 
-    def read(self):
-        return jsonify({
+    def serialize(self):
+        return {
             "isbn": self.isbn,
             "title": self.title,
             "author": self.author,
@@ -28,4 +25,4 @@ class Book:
             "pubDate": self.pub_date,
             "information": self.information,
             "imgUrl": self.img_url
-        })
+        }

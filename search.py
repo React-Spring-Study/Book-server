@@ -1,5 +1,8 @@
 from elasticsearch import Elasticsearch
 import json
+from book import Book
+
+index = "books"
 
 def issue(s, page=1, product=None, op=None, sort=None, ctgr=None):
     if product == 'All':
@@ -39,13 +42,38 @@ def issue(s, page=1, product=None, op=None, sort=None, ctgr=None):
 
     return hits, total
 
-def search(index_name):
+def search_by_title(title):
     es = Elasticsearch("localhost:9200", timeout=30)
-    index=index_name
+    body = {
+        'size': 30,
+        'query': {
+            'match': {
+                'title': title
+            }
+        }
+    }
+    result = es.search(index=index, body=body)['hits']
+    total = result['total']['value']
+    response = []
+    for book in result['hits']:
+        response.append(
+            Book(book['_source']['isbn'],
+                 book['_source']['title'],
+                 book['_source']['author'],
+                 book['_source']['publisher'],
+                 book['_source']['pub_date'],
+                 book['_source']['information'],
+                 book['_source']['img_url']).serialize()
+        )
+    return total, response
+
+
+def search_by_isbn(isbn):
+    es = Elasticsearch("localhost:9200", timeout=30)
     body = {
         'query': {
             'match': {
-                'title': '단어'
+                'isbn': isbn
             }
         }
     }
