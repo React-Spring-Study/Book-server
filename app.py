@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
 from search import search_by_title, search_by_isbn
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
+
+CORS(app)
 
 @app.route('/')
 def hello_world():  # put application's code here

@@ -1,6 +1,5 @@
 from elasticsearch import Elasticsearch
 from book import Book
-import json
 
 index = "books"
 
