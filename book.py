@@ -23,6 +23,16 @@ class Book:
             "author": self.author,
             "publisher": self.publisher,
             "pubDate": self.pub_date,
+            "imgUrl": self.img_url
+        }
+
+    def serialize_info(self):
+        return {
+            "isbn": self.isbn,
+            "title": self.title,
+            "author": self.author,
+            "publisher": self.publisher,
             "information": self.information,
+            "pubDate": self.pub_date,
             "imgUrl": self.img_url
         }

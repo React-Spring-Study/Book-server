@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from search import search_by_title, search_by_isbn
+from search import search_by_title, recommend, search_by_isbn, search_by_information
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -20,12 +20,23 @@ def search_title():
         "result": result
     })
 
+@app.route('/test', methods=['POST'])
+def search_recommend():
+    isbn = request.get_json()['isbn']
+    result = recommend(isbn)
+    return jsonify({"result": result})
+
 @app.route('/isbn', methods=['POST'])
 def search_isbn():
     isbn = request.get_json()['isbn']
     result = search_by_isbn(isbn)
     return jsonify({"result": result})
 
+@app.route('/info', methods=['POST'])
+def search_info():
+    info = request.get_json()['information']
+    result = search_by_information(info)
+    return jsonify({"result": result})
 
 if __name__ == '__main__':
     app.run()
