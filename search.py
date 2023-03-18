@@ -21,12 +21,12 @@ def search_by_title(title):
 
 # 책 추천
 def recommend(isbn):
-    book = search_by_isbn(isbn)
+    book = search_by_isbn_rec(isbn)
     if book is not None:
         return recommend_by_information(book[0]['_source']['information'])
 
 # - isbn 으로 검색
-def search_by_isbn(isbn):
+def search_by_isbn_rec(isbn):
     body = {
         "query": {
             "bool": {
@@ -45,6 +45,25 @@ def search_by_isbn(isbn):
         return
     return result
     # 리스트
+
+def search_by_isbn(isbn):
+    body = {
+        "query": {
+            "bool": {
+                "filter": [
+                    {
+                        "match": {
+                            "isbn.keyword": isbn
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    result = es.search(index=index, body=body)['hits']['hits']
+    if len(result) == 0:
+        return
+    return to(result[0])
 
 # - 실질적 추천 로직
 def recommend_by_information(text):
@@ -103,6 +122,17 @@ def to_book(result):
             }
         )
     return response
+
+def to(book):
+    return {
+        "book": Book(book['_source']['isbn'],
+                     book['_source']['title'],
+                     book['_source']['author'],
+                     book['_source']['publisher'],
+                     book['_source']['pub_date'],
+                     book['_source']['information'],
+                     book['_source']['img_url']).serialize()
+    }
 
 def to_book_without_me(result):
     response = []
