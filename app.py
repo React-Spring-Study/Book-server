@@ -20,7 +20,7 @@ def search_title():
         "result": result
     })
 
-@app.route('/test', methods=['POST'])
+@app.route('/recommendation', methods=['POST'])
 def search_recommend():
     isbn = request.get_json()['isbn']
     result = recommend(isbn)
@@ -30,7 +30,7 @@ def search_recommend():
 def search_isbn():
     isbn = request.get_json()['isbn']
     result = search_by_isbn(isbn)
-    return jsonify({"result": result})
+    return jsonify(result)
 
 @app.route('/info', methods=['POST'])
 def search_info():
