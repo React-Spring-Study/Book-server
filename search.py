@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch
 from book import Book
 
 index = "books"
-es = Elasticsearch("localhost:9200", timeout=30)
+es = Elasticsearch("http://localhost:9200", timeout=30)
 
 
 # 책 제목 검색
