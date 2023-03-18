@@ -34,7 +34,7 @@ def search_isbn():
 
 @app.route('/info', methods=['POST'])
 def search_info():
-    info = request.get_json()['information']
+    info = request.get_json()['isbn']
     result = search_by_information(info)
     return jsonify({"result": result})
 

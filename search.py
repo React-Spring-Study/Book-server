@@ -81,10 +81,15 @@ def recommend_by_information(text):
 # 테스트용: 책 소개로 검색
 def search_by_information(text):
     body = {
-        'size': 10,
-        'query': {
-            'match': {
-                'information': text
+        "query": {
+            "bool": {
+                "filter": [
+                    {
+                        "match": {
+                            "isbn.keyword": text
+                        }
+                    }
+                ]
             }
         }
     }
