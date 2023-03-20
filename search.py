@@ -19,11 +19,13 @@ def search_by_title(title):
     total = result['total']['value']
     return total, to_book(result)
 
+
 # 책 추천
 def recommend(isbn):
     book = search_by_isbn_rec(isbn)
     if book is not None:
-        return recommend_by_information(book[0]['_source']['information'])
+        return recommend_by_information(book)
+
 
 # - isbn 으로 검색
 def search_by_isbn_rec(isbn):
@@ -46,6 +48,7 @@ def search_by_isbn_rec(isbn):
     return result
     # 리스트
 
+
 def search_by_isbn(isbn):
     body = {
         "query": {
@@ -65,18 +68,20 @@ def search_by_isbn(isbn):
         return
     return to(result[0])
 
+
 # - 실질적 추천 로직
-def recommend_by_information(text):
+def recommend_by_information(book):
     body = {
         'size': 4,
         'query': {
             'match': {
-                'information': text
+                'information': book[0]['_source']['information']
             }
         }
     }
     result = es.search(index=index, body=body)['hits']
-    return to_book_without_me(result)
+    return to_book_without_me(book[0], result)
+
 
 # 테스트용: 책 소개로 검색
 def search_by_information(text):
@@ -110,6 +115,7 @@ def search_by_information(text):
         )
     return response
 
+
 # 응답용 객체 생성
 def to_book(result):
     response = []
@@ -128,6 +134,7 @@ def to_book(result):
         )
     return response
 
+
 def to(book):
     return {
         "book": Book(book['_source']['isbn'],
@@ -139,22 +146,21 @@ def to(book):
                      book['_source']['img_url']).serialize()
     }
 
-def to_book_without_me(result):
-    response = []
+
+def to_book_without_me(target, result):
+    res = []
     for book in result['hits']:
-        response.append(
-            {
-                "book": Book(book['_source']['isbn'],
-                             book['_source']['title'],
-                             book['_source']['author'],
-                             book['_source']['publisher'],
-                             book['_source']['pub_date'],
-                             book['_source']['information'],
-                             book['_source']['img_url']).serialize(),
-                "score": book['_score']
-            }
-        )
-    response.pop(0)
-    return response
-
-
+        if book['_id'] != target['_id']:
+            res.append(
+                {
+                    "book": Book(book['_source']['isbn'],
+                                 book['_source']['title'],
+                                 book['_source']['author'],
+                                 book['_source']['publisher'],
+                                 book['_source']['pub_date'],
+                                 book['_source']['information'],
+                                 book['_source']['img_url']).serialize(),
+                    "score": book['_score']
+                }
+            )
+    return res
