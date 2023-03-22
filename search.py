@@ -150,7 +150,7 @@ def to(book):
 def to_book_without_me(target, result):
     res = []
     for book in result['hits']:
-        if book['_id'] != target['_id']:
+        if book['_source']['title'] != target['_source']['title'] and book['_source']['isbn'] != target['_source']['isbn']:
             res.append(
                 {
                     "book": Book(book['_source']['isbn'],
