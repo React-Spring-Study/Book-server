@@ -72,7 +72,6 @@ def search_by_isbn(isbn):
 # - 실질적 추천 로직
 def recommend_by_information(book):
     body = {
-        'size': 4,
         'query': {
             'match': {
                 'information': book[0]['_source']['information']
@@ -149,18 +148,15 @@ def to(book):
 
 def to_book_without_me(target, result):
     res = []
+    recommends = set()
     for book in result['hits']:
-        if book['_source']['title'] != target['_source']['title'] and book['_source']['isbn'] != target['_source']['isbn']:
-            res.append(
-                {
-                    "book": Book(book['_source']['isbn'],
-                                 book['_source']['title'],
-                                 book['_source']['author'],
-                                 book['_source']['publisher'],
-                                 book['_source']['pub_date'],
-                                 book['_source']['information'],
-                                 book['_source']['img_url']).serialize(),
-                    "score": book['_score']
-                }
-            )
+        if book['_source']['isbn']!=target['_source']['isbn']:
+            recommends.add((book['_source']['isbn'], book['_score']))
+            if len(recommends) == 3:
+                break
+    for rec in recommends:
+        book_by_isbn = search_by_isbn(rec[0])
+        book_by_isbn["score"] = rec[1]
+        res.append(book_by_isbn)
+    res = sorted(res, key=(lambda x: x['score']), reverse=True)
     return res
