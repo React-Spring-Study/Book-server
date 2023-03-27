@@ -150,7 +150,7 @@ def to_book_without_me(target, result):
     res = []
     recommends = set()
     for book in result['hits']:
-        if book['_source']['isbn']!=target['_source']['isbn']:
+        if book['_source']['isbn']!=target['_source']['isbn'] and book['_source']['title']!=target['_source']['title']:
             recommends.add((book['_source']['isbn'], book['_score']))
             if len(recommends) == 3:
                 break
